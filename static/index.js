@@ -16,11 +16,41 @@ const ANIMATION_MILLISECONDS = 3000;
 const PAUSE_MILLISECONDS = 1000;
 
 
-document.addEventListener('DOMContentLoaded', () => {
+function initTheme() {
+    let theme = localStorage.getItem("theme") ?? "dark";
+    updateTheme(theme);
+}
+
+function toggleTheme() {
+    document.documentElement.classList.toggle("light-theme");
+    const theme = document.documentElement.classList.contains("light-theme") ? "light" : "dark";
+    localStorage.setItem("theme", theme);
+    updateTheme(theme);
+}
+
+function updateTheme(theme) {
+    localStorage.setItem("theme", theme);
+    const themeButton = document.getElementById("theme-toggle-button");
+    if (theme === "light") {
+        document.documentElement.classList.add("light-theme");
+        themeButton.innerText = "🌛";
+    } else {
+        document.documentElement.classList.remove("light-theme");
+        themeButton.innerText = "☀️";
+    }
+}
+
+
+function init() {
+    initTheme();
+    document.getElementById("theme-toggle-button").addEventListener("click", toggleTheme);
     new Typewriter(
         "#typewriter-text",
         POSSIBLE_DESCRIPTIONS,
         ANIMATION_MILLISECONDS + PAUSE_MILLISECONDS
     );
     new Terminal("#terminal");
-});
+}
+
+
+document.addEventListener('DOMContentLoaded', init);

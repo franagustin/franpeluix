@@ -7,6 +7,15 @@
     --prompt-green: #A3E635;
 }
 
+.light-theme {
+    --bg: #E0E0E0;
+    --terminal-bg: #FAFAFA;
+    --text: #1A1A1A;
+    --highlight: #42A5F5;
+    --blue: #1565C0;
+    --prompt-green: #4CAF50;
+}
+
 * {
     box-sizing: border-box;
 }
@@ -20,6 +29,12 @@ body {
 
 .full-container {
     margin: auto;
+}
+
+.theme-toggle-button {
+    cursor: pointer;
+    float: right;
+    font-size: 1.75rem;
 }
 
 .avatar {
