@@ -1,0 +1,191 @@
+:root {
+    --bg: #111111;
+    --terminal-bg: #0B0F1A;
+    --text: #ECEFF4;
+    --highlight: #4FC3F7;
+    --blue: #2196F3;
+    --prompt-green: #A3E635;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'UbuntuMono', 'monospace';
+}
+
+.full-container {
+    margin: auto;
+}
+
+.avatar {
+    max-width: 500px;
+    max-height: 350px;
+    border-radius: 50%;
+    border: 2px solid var(--highlight);
+}
+
+.title {
+    font-family: 'BigBlueTerm', 'monospace';
+    font-size: 3rem;
+}
+
+.quote {
+    font-family: 'Countryside';
+    font-size: 1.15rem;
+    margin-left: 0;
+}
+
+.headline {
+    font-family: 'RemingtonNoiseless', 'monospace';
+    font-size: 1.5rem;
+    padding-left: 2rem;
+}
+
+
+.typewriter {
+    --chars: 0;
+    font-family: 'RemingtonNoiseless', 'monospace';
+    display: inline-block;
+    vertical-align: bottom;
+    width: 0ch;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 2px solid;
+    animation:
+        typing 3s steps(var(--chars)) forwards,
+        blink .7s step-end infinite alternate;
+}
+
+@keyframes typing {
+    from { width: 0ch; }
+    to { width: calc(var(--chars) * 1ch); }
+}
+
+@keyframes blink {
+    50% { border-color: transparent; }
+}
+
+.bio-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap-reverse;
+}
+
+.bio-container #info {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.bio-container figure {
+    margin: 0;
+}
+
+
+.terminal-container h2 {
+    margin: 0;
+}
+
+.terminal-caption {
+    color: var(--highlight);
+    font-style: italic;
+    font-size: 1.1rem;
+}
+
+.terminal {
+    border: 1px solid var(--blue);
+}
+
+.terminal-navbar {
+    background: var(--blue);
+    height: 2rem;
+    line-height: 1.5rem;
+    font-size: 1.15rem;
+    padding: 0.25rem 0.5rem;
+    font-weight: bold;
+}
+
+.terminal-body {
+    font-family: 'BigBlueTerm', 'monospace';
+    font-size: 1rem;
+    padding: 0.25rem 1rem;
+    line-height: 1.15;
+    background-color: var(--terminal-bg);
+}
+
+.terminal-input {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.terminal-input .prompt {
+    color: var(--prompt-green);
+    font-weight: bold;
+}
+
+.terminal-input-editable {
+    flex: 1;
+    cursor: text;
+}
+
+.terminal-input-editable:focus-visible {
+    outline: none;
+}
+
+
+@media only screen and (min-width: 640px) {
+    .full-container {
+        max-width: 85%;
+    }
+
+    .quote {
+        word-spacing: 1.15rem;
+    }
+
+    .bio-container {
+        justify-content: space-between;
+    }
+
+    .bio-container #info {
+        text-align: justify;
+    }
+}
+
+
+@font-face {
+    font-family: 'BigBlueTerm';
+    src: url('/static/fonts/BigBlueTerm.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'RemingtonNoiseless';
+    src: url('/static/fonts/RemingtonNoiseless.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Countryside';
+    src: url('/static/fonts/Countryside.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'UbuntuMono';
+    src: url('/static/fonts/UbuntuMono.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
