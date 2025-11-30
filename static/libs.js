@@ -231,7 +231,7 @@ export class FileSystem {
 
     async getFileContents(filepath) {
         const full = this.getFullPath(filepath);
-        const node = this.list(full);
+        const node = this.list(filepath);
         if (node.type === "directory") {
             throw new Error(`${full} is a directory. You can only read files.`);
         }
