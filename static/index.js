@@ -1,4 +1,4 @@
-import { Terminal, Typewriter } from './libs.js';
+import { FileSystem, Terminal, Typewriter } from './libs.js';
 
 
 const POSSIBLE_DESCRIPTIONS = Object.freeze([
@@ -41,7 +41,7 @@ function updateTheme(theme) {
 }
 
 
-function init() {
+async function init() {
     initTheme();
     document.getElementById("theme-toggle-button").addEventListener("click", toggleTheme);
     new Typewriter(
@@ -49,7 +49,19 @@ function init() {
         POSSIBLE_DESCRIPTIONS,
         ANIMATION_MILLISECONDS + PAUSE_MILLISECONDS
     );
-    new Terminal("#terminal");
+
+    let files;
+    try {
+        const filesResponse = await fetch("/static/files/index.json");
+        if (!filesResponse.ok) {
+            throw new Error(`Failed to load terminal files: ${filesResponse.status}`);
+        }
+        files = JSON.parse(await filesResponse.text());
+    } catch (error) {
+        console.error("Failed to load files index:", error);
+        files = { files: [], directories: {} };
+    }
+    new Terminal("#terminal", new FileSystem(files));
 }
 
 

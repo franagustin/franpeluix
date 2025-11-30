@@ -1,0 +1,18 @@
+{
+  "directories": {
+    "jobs": {
+      "directories": {},
+      "files": [
+        "bmat.md",
+        "boost.md",
+        "codea.md",
+        "codelitt.md",
+        "infoxel.md",
+        "seenka.md"
+      ]
+    }
+  },
+  "files": [
+    "about.md"
+  ]
+}
