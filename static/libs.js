@@ -145,7 +145,7 @@ export class Terminal {
         } catch (e) {
             text = e.message || String(e);
         }
-        this.print(text, false, true);
+        this.print(text, true, true);
     }
 
     command_cd(folder) {
@@ -165,9 +165,13 @@ export class Terminal {
         try {
             const entry = this.fileSystem.list(node).value;
             if (entry.directories) {
-                Object.keys(entry.directories).forEach(d => nodes.push(`<span class="directory">${d}/</span>`));
+                Object.keys(entry.directories).forEach(
+                    d => nodes.push(`<span class="directory">${this.escapeHTML(d)}/</span>`),
+                );
             }
-            entry.files.forEach(f => nodes.push(`<span class="file">${f}</span>`));
+            entry.files.forEach(f => nodes.push(
+                `<span class="file">${this.escapeHTML(f)}</span>`),
+            );
         } catch(e) {
             nodes.push(e.message || String(e))
         }
@@ -221,7 +225,8 @@ export class FileSystem {
         if (!path) return this.cwd;
         if (path.startsWith(this.folderSplitter)) return path;
         const combined = this.cwd ? `${this.cwd}${this.folderSplitter}${path}` : path;
-        return combined.replace(/\/+/g, this.folderSplitter);
+        const splitterRegex = new RegExp(`${this.folderSplitter.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}+`, 'g');
+        return combined.replace(splitterRegex, this.folderSplitter);
     }
 
     async getFileContents(filepath) {

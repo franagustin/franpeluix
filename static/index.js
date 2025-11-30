@@ -59,7 +59,7 @@ async function init() {
         files = JSON.parse(await filesResponse.text());
     } catch (error) {
         console.error("Failed to load files index:", error);
-        files = [];
+        files = { files: [], directories: {} };
     }
     new Terminal("#terminal", new FileSystem(files));
 }
