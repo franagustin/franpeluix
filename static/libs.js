@@ -94,9 +94,18 @@ export class Terminal {
     print(text) {
         this.element.querySelector(".terminal-body").insertAdjacentHTML("beforeend", `
             <div class="terminal-output">
-                <p class="">${text}</p>
+                <p class="">${this.escapeHTML(text)}</p>
             </div>
         `);
+    }
+
+    escapeHTML(text) {
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     }
 
     async execute(line) {
@@ -132,17 +141,21 @@ export class Terminal {
             const fileContents = await this.fileSystem.getFileContents(filepath);
             text = fileContents.replaceAll("\n", "<br>");
         } catch (e) {
-            text = e;
+            text = e.message || String(e);
         }
         this.print(text);
     }
 
     command_cd(folder) {
-        this.fileSystem.changeWorkingDirectory(folder);
+        try {
+            this.fileSystem.changeWorkingDirectory(folder);
+        } catch(e) {
+            this.print(e.message || String(e));
+        }
     }
 
     command_help() {
-        this.print("Available commands: cd, clear, help, ls");
+        this.print("Available commands: cat, cd, clear, help, ls");
     }
 
     command_ls(node) {
@@ -154,7 +167,7 @@ export class Terminal {
             }
             entry.files.forEach(f => nodes.push(`<span class="file">${f}</span>`));
         } catch(e) {
-            nodes.push(e)
+            nodes.push(e.message || String(e))
         }
         this.print(nodes.join("\n"));
     }
@@ -169,8 +182,10 @@ export class FileSystem {
     }
 
     changeWorkingDirectory(newDirectory) {
-        console.log(this.cwd);
-        this.cwd = this.getFullPath(newDirectory);
+        const newPath = this.getFullPath(newDirectory);
+        // Validate directory exists by attempting to list it
+        this.list(newPath);
+        this.cwd = newPath;
     }
 
     list(directory) {
@@ -181,7 +196,7 @@ export class FileSystem {
         for (let i = 0; i < parts.length - 1; i++) {
             const part = parts[i];
             if (!node.directories || !(part in node.directories)) {
-                throw `Path not found: ${full}`;
+                throw new Error(`Path not found: ${full}`);
             }
             node = node.directories[part];
         }
@@ -195,17 +210,18 @@ export class FileSystem {
             return {"files": [last]};
         }
 
-        throw `Path not found: ${full}`;
+        throw new Error(`Path not found: ${full}`);
     }
 
     getFullPath(path) {
         if (!path) return this.cwd;
-        return `${this.cwd}/${path}`;
+        if (path.startsWith(this.folderSplitter)) return path;
+        const combined = this.cwd ? `${this.cwd}${this.folderSplitter}${path}` : path;
+        return combined.replace(/\/+/g, this.folderSplitter);
     }
 
     async getFileContents(filepath) {
         const full = this.getFullPath(filepath);
-        console.log(full);
         const node = this.list(full);
         if (node.directories) throw new Error(`${full} is a directory. You can only read files.`);
         const response = await fetch(`/static/files${full}`);
