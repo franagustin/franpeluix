@@ -18,6 +18,8 @@ jobs:
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
 
       - name: Generate index.json
         run: ruby scripts/generate_files_index.rb static/files
