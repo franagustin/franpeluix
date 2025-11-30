@@ -1,21 +1,18 @@
 {
-    "files": [
-        "about.md",
-        "help.md"
-    ],
-    "directories": {
-        "jobs": {
-            "files": [
-                "example.md",
-                "other_example.md"
-            ],
-            "directories": {
-                "a": {
-                    "files": [
-                        "b.md"
-                    ]
-                }
-            }
-        }
+  "directories": {
+    "jobs": {
+      "directories": {},
+      "files": [
+        "bmat.md",
+        "boost.md",
+        "codea.md",
+        "codelitt.md",
+        "infoxel.md",
+        "seenka.md"
+      ]
     }
+  },
+  "files": [
+    "about.md"
+  ]
 }
