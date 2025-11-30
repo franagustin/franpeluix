@@ -1,4 +1,4 @@
-import { Terminal, Typewriter } from './libs.js';
+import { FileSystem, Terminal, Typewriter } from './libs.js';
 
 
 const POSSIBLE_DESCRIPTIONS = Object.freeze([
@@ -49,7 +49,15 @@ function init() {
         POSSIBLE_DESCRIPTIONS,
         ANIMATION_MILLISECONDS + PAUSE_MILLISECONDS
     );
-    new Terminal("#terminal");
+    new Terminal(
+        "#terminal",
+        new FileSystem({
+            "files": ["about.md", "help.md"],
+            "directories": {
+                "jobs": {"files": ["example.md", "other_example.md"], "directories": {"a": {"files": ["b.md"]}}},
+            }
+        })
+    );
 }
 
 

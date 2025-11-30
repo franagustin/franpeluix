@@ -32,7 +32,7 @@ export class Typewriter {
 
 
 export class Terminal {
-    constructor(selector, maxLines = 30) {
+    constructor(selector, fileSystem, maxLines = 30) {
         this.element = document.querySelector(selector);
         // Bind the onKeyDown so we can use this.currenInput inside it.
         // It MUST be bind BEFORE calling setup, or we will attach an unbound listener.
@@ -40,16 +40,17 @@ export class Terminal {
         this.maxLines = maxLines;
         this.setup();
         this.lineCount = 0;
+        this.fileSystem = fileSystem;
     }
 
-    setup() {
+    setup(reset = false) {
         this.element.classList.add("terminal");
         this.element.innerHTML = `
             <div class="terminal-navbar">Terminal</div>
             <div class="terminal-body">
             </div>
         `;
-        this.addNewLine("help");
+        this.addNewLine(reset ? "" : "help");
     }
 
     addNewLine(text = "") {
@@ -70,14 +71,14 @@ export class Terminal {
         this.currentInput.scrollIntoView({behavior: "smooth", block: "nearest"})
     }
 
-    onKeyDown(e) {
+    async onKeyDown(e) {
         if (e.key !== "Enter") return;
         e.preventDefault();
         if (this.lineCount >= this.maxLines) return;
         this.currentInput.contentEditable = false;
         this.currentInput.removeEventListener("keydown", this.onKeyDown);
         this.currentInput.classList.remove("terminal-input-editable");
-        this.addNewLine();
+        await this.execute(this.currentInput.textContent.trim())
     }
 
     setCursorToEnd(element) {
@@ -88,5 +89,134 @@ export class Terminal {
         range.collapse(false);
         selection.removeAllRanges();
         selection.addRange(range);
+    }
+
+    print(text) {
+        this.element.querySelector(".terminal-body").insertAdjacentHTML("beforeend", `
+            <div class="terminal-output">
+                <p class="">${text}</p>
+            </div>
+        `);
+    }
+
+    async execute(line) {
+        const [command, ...args] = line.split(" ");
+        let addNewLine = true;
+        switch (command) {
+            case "cat":
+                await this.command_cat(args[0]);
+                break;
+            case "cd":
+                this.command_cd(args[0]);
+                break;
+            case "clear":
+                this.setup(true);
+                addNewLine = false;
+                break;
+            case "help":
+                this.command_help();
+                break;
+            case "ls":
+                this.command_ls(args[0]);
+                break;
+            default:
+                this.print(`Command not found: ${command}.`);
+                this.command_help();
+        }
+        if (addNewLine) this.addNewLine();
+    }
+
+    async command_cat(filepath) {
+        let text;
+        try {
+            const fileContents = await this.fileSystem.getFileContents(filepath);
+            text = fileContents.replaceAll("\n", "<br>");
+        } catch (e) {
+            text = e;
+        }
+        this.print(text);
+    }
+
+    command_cd(folder) {
+        this.fileSystem.changeWorkingDirectory(folder);
+    }
+
+    command_help() {
+        this.print("Available commands: cd, clear, help, ls");
+    }
+
+    command_ls(node) {
+        const nodes = [];
+        try {
+            const entry = this.fileSystem.list(node);
+            if (entry.directories) {
+                Object.keys(entry.directories).forEach(d => nodes.push(`<span class="directory">${d}/</span>`));
+            }
+            entry.files.forEach(f => nodes.push(`<span class="file">${f}</span>`));
+        } catch(e) {
+            nodes.push(e)
+        }
+        this.print(nodes.join("\n"));
+    }
+}
+
+
+export class FileSystem {
+    constructor(files, folderSplitter = "/") {
+        this.files = files;
+        this.folderSplitter = folderSplitter;
+        this.cwd = "";
+    }
+
+    changeWorkingDirectory(newDirectory) {
+        console.log(this.cwd);
+        this.cwd = this.getFullPath(newDirectory);
+    }
+
+    list(directory) {
+        const full = directory && directory.startsWith("/") ? directory : this.getFullPath(directory);
+        const parts = full.split(this.folderSplitter).slice(1);  // Skip root ""
+        let node = this.files;
+
+        for (let i = 0; i < parts.length - 1; i++) {
+            const part = parts[i];
+            if (!node.directories || !(part in node.directories)) {
+                throw `Path not found: ${full}`;
+            }
+            node = node.directories[part];
+        }
+
+        const last = parts[parts.length - 1];
+        if (!last) return node;
+        if (node.directories && last in node.directories) {
+            return node.directories[last];
+        }
+        if (node.files && node.files.includes(last)) {
+            return {"files": [last]};
+        }
+
+        throw `Path not found: ${full}`;
+    }
+
+    getFullPath(path) {
+        if (!path) return this.cwd;
+        return `${this.cwd}/${path}`;
+    }
+
+    async getFileContents(filepath) {
+        const full = this.getFullPath(filepath);
+        console.log(full);
+        const node = this.list(full);
+        if (node.directories) throw new Error(`${full} is a directory. You can only read files.`);
+        const response = await fetch(`/static/files${full}`);
+
+        if (!response.ok) {
+            if (response.status === 404) {
+                throw new Error(`File not found: ${full}`);
+            }
+            throw new Error(`Fetch failed: ${response.status} ${response.statusText}`);
+        }
+
+        return await response.text();
     }
 }
