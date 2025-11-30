@@ -91,10 +91,10 @@ export class Terminal {
         selection.addRange(range);
     }
 
-    print(text) {
+    print(text, escape = true) {
         this.element.querySelector(".terminal-body").insertAdjacentHTML("beforeend", `
             <div class="terminal-output">
-                <p class="">${this.escapeHTML(text)}</p>
+                <p class="">${escape ? this.escapeHTML(text) : text}</p>
             </div>
         `);
     }
@@ -139,7 +139,7 @@ export class Terminal {
         let text;
         try {
             const fileContents = await this.fileSystem.getFileContents(filepath);
-            text = fileContents.replaceAll("\n", "<br>");
+            text = fileContents;
         } catch (e) {
             text = e.message || String(e);
         }
@@ -169,7 +169,7 @@ export class Terminal {
         } catch(e) {
             nodes.push(e.message || String(e))
         }
-        this.print(nodes.join("\n"));
+        this.print(nodes.join("\n"), false);
     }
 }
 
@@ -190,7 +190,7 @@ export class FileSystem {
 
     list(directory) {
         const full = directory && directory.startsWith("/") ? directory : this.getFullPath(directory);
-        const parts = full.split(this.folderSplitter).slice(1);  // Skip root ""
+        const parts = full.split(this.folderSplitter);
         let node = this.files;
 
         for (let i = 0; i < parts.length - 1; i++) {
@@ -223,8 +223,11 @@ export class FileSystem {
     async getFileContents(filepath) {
         const full = this.getFullPath(filepath);
         const node = this.list(full);
-        if (node.directories) throw new Error(`${full} is a directory. You can only read files.`);
-        const response = await fetch(`/static/files${full}`);
+        console.log(node);
+        if (!node.files || node.files.length > 1) {
+            throw new Error(`${full} is a directory. You can only read files.`);
+        }
+        const response = await fetch(`/static/files/${full}`);
 
         if (!response.ok) {
             if (response.status === 404) {

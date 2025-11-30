@@ -41,7 +41,7 @@ function updateTheme(theme) {
 }
 
 
-function init() {
+async function init() {
     initTheme();
     document.getElementById("theme-toggle-button").addEventListener("click", toggleTheme);
     new Typewriter(
@@ -49,15 +49,9 @@ function init() {
         POSSIBLE_DESCRIPTIONS,
         ANIMATION_MILLISECONDS + PAUSE_MILLISECONDS
     );
-    new Terminal(
-        "#terminal",
-        new FileSystem({
-            "files": ["about.md", "help.md"],
-            "directories": {
-                "jobs": {"files": ["example.md", "other_example.md"], "directories": {"a": {"files": ["b.md"]}}},
-            }
-        })
-    );
+    const filesResponse = await fetch("/static/files/index.json");
+    const files = JSON.parse(await filesResponse.text());
+    new Terminal("#terminal", new FileSystem(files));
 }
 
 
