@@ -1,0 +1,21 @@
+{
+    "files": [
+        "about.md",
+        "help.md"
+    ],
+    "directories": {
+        "jobs": {
+            "files": [
+                "example.md",
+                "other_example.md"
+            ],
+            "directories": {
+                "a": {
+                    "files": [
+                        "b.md"
+                    ]
+                }
+            }
+        }
+    }
+}

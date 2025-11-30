@@ -223,8 +223,7 @@ export class FileSystem {
     async getFileContents(filepath) {
         const full = this.getFullPath(filepath);
         const node = this.list(full);
-        console.log(node);
-        if (!node.files || node.files.length > 1) {
+        if (!node.files || node.files.length > 1 || node.directories) {
             throw new Error(`${full} is a directory. You can only read files.`);
         }
         const response = await fetch(`/static/files/${full}`);

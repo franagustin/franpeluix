@@ -49,8 +49,18 @@ async function init() {
         POSSIBLE_DESCRIPTIONS,
         ANIMATION_MILLISECONDS + PAUSE_MILLISECONDS
     );
-    const filesResponse = await fetch("/static/files/index.json");
-    const files = JSON.parse(await filesResponse.text());
+
+    let files;
+    try {
+        const filesResponse = await fetch("/static/files/index.json");
+        if (!filesResponse.ok) {
+            throw new Error(`Failed to load terminal files: ${filesResponse.status}`);
+        }
+        files = JSON.parse(await filesResponse.text());
+    } catch (error) {
+        console.error("Failed to load files index:", error);
+        files = [];
+    }
     new Terminal("#terminal", new FileSystem(files));
 }
 
