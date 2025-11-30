@@ -91,10 +91,12 @@ export class Terminal {
         selection.addRange(range);
     }
 
-    print(text, escape = true) {
+    print(text, escape = true, preserveWhitespace = false) {
         this.element.querySelector(".terminal-body").insertAdjacentHTML("beforeend", `
             <div class="terminal-output">
-                <p class="">${escape ? this.escapeHTML(text) : text}</p>
+                <p
+                    class='${preserveWhitespace ? "preserve-whitespace" : ""}'
+                >${escape ? this.escapeHTML(text) : text}</p>
             </div>
         `);
     }
@@ -143,7 +145,7 @@ export class Terminal {
         } catch (e) {
             text = e.message || String(e);
         }
-        this.print(text);
+        this.print(text, false, true);
     }
 
     command_cd(folder) {
@@ -161,7 +163,7 @@ export class Terminal {
     command_ls(node) {
         const nodes = [];
         try {
-            const entry = this.fileSystem.list(node);
+            const entry = this.fileSystem.list(node).value;
             if (entry.directories) {
                 Object.keys(entry.directories).forEach(d => nodes.push(`<span class="directory">${d}/</span>`));
             }
@@ -183,8 +185,10 @@ export class FileSystem {
 
     changeWorkingDirectory(newDirectory) {
         const newPath = this.getFullPath(newDirectory);
-        // Validate directory exists by attempting to list it
-        this.list(newPath);
+        const entry = this.list(newPath);
+        if (entry.type === "file") {
+            throw new Error(`Can only cd into a folder. ${newDirectory} is a file`);
+        }
         this.cwd = newPath;
     }
 
@@ -202,12 +206,12 @@ export class FileSystem {
         }
 
         const last = parts[parts.length - 1];
-        if (!last) return node;
+        if (!last) return {type: "directory", value: node};
         if (node.directories && last in node.directories) {
-            return node.directories[last];
+            return {type: "directory", value: node.directories[last]};
         }
         if (node.files && node.files.includes(last)) {
-            return {"files": [last]};
+            return {type: "file", value: {"files": [last]}};
         }
 
         throw new Error(`Path not found: ${full}`);
@@ -223,7 +227,7 @@ export class FileSystem {
     async getFileContents(filepath) {
         const full = this.getFullPath(filepath);
         const node = this.list(full);
-        if (!node.files || node.files.length > 1 || node.directories) {
+        if (node.type === "directory") {
             throw new Error(`${full} is a directory. You can only read files.`);
         }
         const response = await fetch(`/static/files/${full}`);

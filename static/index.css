@@ -161,6 +161,10 @@ body {
     color: var(--terminal-comment);
 }
 
+.terminal-output .preserve-whitespace {
+    white-space: pre-wrap;
+}
+
 .terminal-body .directory {
     color: var(--terminal-directory);
 }
