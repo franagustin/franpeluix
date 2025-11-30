@@ -222,6 +222,9 @@ export class FileSystem {
     }
 
     getFullPath(path) {
+        if (path === "..") {
+            return this.cwd.split(this.folderSplitter).slice(0, -1).join(this.folderSplitter);
+        }
         if (!path) return this.cwd;
         if (path.startsWith(this.folderSplitter)) return path;
         const combined = this.cwd ? `${this.cwd}${this.folderSplitter}${path}` : path;
