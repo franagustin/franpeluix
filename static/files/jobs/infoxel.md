@@ -7,9 +7,10 @@ Under construction...
 
 
 ### Stack
-- **Backend**: Python, Django
-- **Frontend**: JavaScript, jQuery, Angular, React
-- **Databases**: PostgreSQL, ElasticSearch, ClickHouse
-- **Infrastructure**: Google Cloud Project, Kubernetes, PubSub
-- **Version Control System**: Gitlab
-- **Others**: FFmpeg, Social Media Advertisement
+- Backend: Python, Django
+- Frontend: JavaScript, jQuery, Angular, React
+- Databases: PostgreSQL, ElasticSearch, ClickHouse
+- Infrastructure: Google Cloud Project, Kubernetes, PubSub
+- CI/CD: Gitlab pipelines
+- Version Control System: Gitlab
+- Others: FFmpeg, Social Media Advertisement
