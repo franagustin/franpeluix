@@ -3,6 +3,7 @@
     "jobs": {
       "directories": {},
       "files": [
+        "0_choronology.md",
         "bmat.md",
         "boost.md",
         "codea.md",
