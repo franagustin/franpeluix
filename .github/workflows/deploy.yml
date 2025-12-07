@@ -10,13 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     environment: Production
 
-  steps:
-    - name: SSH and deploy
-      uses: appleboy/ssh-action@v1.2.0
-      with:
-        host: ${{ secrets.VPS_HOST }}
-        username: ${{ secrets.VPS_USER }}
-        key: ${{ secrets.VPS_SSH_KEY }}
-      run: |
-        cd /home/franco/franpeluix
-        git pull origin main
+    steps:
+      - name: SSH and deploy
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /home/franco/franpeluix
+            git pull origin main
