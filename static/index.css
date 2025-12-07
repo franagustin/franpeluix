@@ -68,6 +68,7 @@ body {
     font-size: 1.25rem;
     padding-left: 2rem;
     height: 3ch;
+    text-wrap: wrap;
 }
 
 
@@ -80,6 +81,7 @@ body {
     border-right: 2px solid;
     animation:
         blink .7s step-end infinite alternate;
+    text-wrap: wrap;
 }
 
 @keyframes blink {
