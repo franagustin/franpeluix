@@ -12,8 +12,8 @@ const POSSIBLE_DESCRIPTIONS = Object.freeze([
     "a casual chats over beers enjoyer 🍻",
     "an in-making game developer 🎮",
 ]);
-const ANIMATION_MILLISECONDS = 3000;
-const PAUSE_MILLISECONDS = 1000;
+const LETTER_INTERVAL = 75;
+const PAUSE_MILLISECONDS = 1200;
 
 
 function initTheme() {
@@ -47,7 +47,8 @@ async function init() {
     new Typewriter(
         "#typewriter-text",
         POSSIBLE_DESCRIPTIONS,
-        ANIMATION_MILLISECONDS + PAUSE_MILLISECONDS
+        LETTER_INTERVAL,
+        PAUSE_MILLISECONDS,
     );
 
     let files;
