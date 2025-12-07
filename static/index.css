@@ -67,26 +67,19 @@ body {
     font-family: 'RemingtonNoiseless', 'monospace';
     font-size: 1.25rem;
     padding-left: 2rem;
+    height: 3ch;
 }
 
 
 .typewriter {
-    --chars: 0;
     font-family: 'RemingtonNoiseless', 'monospace';
     display: inline-block;
     vertical-align: bottom;
-    width: 0ch;
     overflow: hidden;
     white-space: nowrap;
     border-right: 2px solid;
     animation:
-        typing 3s steps(var(--chars)) forwards,
         blink .7s step-end infinite alternate;
-}
-
-@keyframes typing {
-    from { width: 0ch; }
-    to { width: calc(var(--chars) * 1ch); }
 }
 
 @keyframes blink {
@@ -195,6 +188,10 @@ body {
 
     .bio-container #info {
         text-align: justify;
+    }
+
+    .headline {
+        height: 2ch;
     }
 }
 

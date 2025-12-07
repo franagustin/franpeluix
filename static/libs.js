@@ -1,32 +1,50 @@
 export class Typewriter {
-    constructor(selector, texts, interval) {
+    constructor(selector, texts, letterInterval, wordInterval) {
         this.element = document.querySelector(selector);
-        this.texts = texts;
-        this.interval = interval;
-        this.currentIndex = 0;
+        this.texts = texts.map(t => this.segment(t));
+        this.letterInterval = letterInterval;
+        this.wordInterval = wordInterval;
+        this.currentTextIndex = 0;
+        this.currentLetterIndex = 0;
         this.currentTimeout = null;
 
-        this.setText(this.texts[0]);
-        this.scheduleNext();
+        this.typeNext = this.typeNext.bind(this);
+        this.eraseNext = this.eraseNext.bind(this);
+        this.typeNext();
     }
 
-    setText(text) {
-        this.element.textContent = text;
-        this.element.style.setProperty("--chars", text.length);
-        this.element.style.animation = "none";
-        // Force the browser to flush style changes and restart animation
-        void this.element.offsetWidth;
-        this.element.style.removeProperty("animation");
+    segment(text) {
+        const segmenter = new Intl.Segmenter(undefined, {granularity: "grapheme"});
+        return Array.from(segmenter.segment(text), seg => seg.segment);
     }
 
-    scheduleNext() {
+    typeNext() {
         if (this.currentTimeout) clearTimeout(this.currentTimeout);
 
-        this.currentTimeout = setTimeout(() => {
-            this.currentIndex = (this.currentIndex + 1) % this.texts.length;
-            this.setText(this.texts[this.currentIndex]);
-            this.scheduleNext();
-        }, this.interval);
+        const graphemes = this.texts[this.currentTextIndex];
+        this.element.textContent += graphemes[this.currentLetterIndex];
+        this.currentLetterIndex++;
+        if (this.currentLetterIndex >= graphemes.length) {
+            this.currentLetterIndex--;
+            this.currentTimeout = setTimeout(this.eraseNext, this.wordInterval);
+        } else {
+            this.currentTimeout = setTimeout(this.typeNext, this.letterInterval);
+        }
+    }
+
+    eraseNext() {
+        if (this.currentTimeout) clearTimeout(this.currentTimeout);
+
+        const graphemes = this.texts[this.currentTextIndex];
+        this.element.textContent = graphemes.slice(0, this.currentLetterIndex).join("");
+        this.currentLetterIndex--;
+        if (this.element.textContent === "") {
+            this.currentLetterIndex = 0;
+            this.currentTextIndex = (this.currentTextIndex + 1) % this.texts.length;
+            this.currentTimeout = setTimeout(this.typeNext, this.letterInterval);
+        } else {
+            this.currentTimeout = setTimeout(this.eraseNext, this.letterInterval);
+        }
     }
 }
 
