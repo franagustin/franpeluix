@@ -1,5 +1,8 @@
-Chronological start
-------------------------
+# Chronological Start → End
+
+This file defines the intended ordering of job files, from earliest to most recent.
+
+## From first job to latest
 1. infoxel.md
 2. bmat.md
 3. codea.md
@@ -7,12 +10,10 @@ Chronological start
 5. seenka.md
 6. codelitt.md
 
-
-Chronological end
-------------------------
-6. bmat.md
-5. codelitt.md
-4. seenka.md
-3. boost.md
-2. codea.md
-1. infoxel.md
+## From latest job to first
+1. bmat.md
+2. codelitt.md
+3. seenka.md
+4. boost.md
+5. codea.md
+6. infoxel.md
